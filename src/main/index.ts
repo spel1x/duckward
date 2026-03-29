@@ -52,6 +52,14 @@ app.whenReady().then(() => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
+  ipcMain.handle('variables:getAll', () => {
+    return [
+      { id: '1', name: 'ConnectionStrings__Db', description: 'Main database', isSecret: false, dev: 'Server=localhost', qa: 'Server=qa-db', prod: 'Server=prod-db' },
+      { id: '2', name: 'AzureWebJobsStorage', description: 'Storage account connection', isSecret: true, dev: 'UseDevelopmentStorage=true', qa: 'DefaultEndpointsProtocol=https;...', prod: 'DefaultEndpointsProtocol=https;...' },
+      { id: '3', name: 'FUNCTIONS_WORKER_RUNTIME', description: 'Runtime language', isSecret: false, dev: 'dotnet', qa: 'dotnet', prod: 'dotnet' },
+    ]
+  })
+
   createWindow()
 
   app.on('activate', function () {
