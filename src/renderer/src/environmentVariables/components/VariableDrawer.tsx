@@ -4,13 +4,13 @@ import { Variable } from '../../../../shared/types/Variable'
 import EnvChip from '../../shared/components/EnvChip'
 import TypeBadge from '../../shared/components/TypeBadge'
 
-function VariableDrawer({
+const VariableDrawer = ({
   variable,
   onClose
 }: {
   variable: Variable | null
   onClose: () => void
-}): React.JSX.Element {
+}) => {
   const open = variable !== null
 
   return (

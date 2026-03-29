@@ -4,10 +4,10 @@ const ENV_COLORS: Record<string, 'success' | 'warning' | 'secondary' | 'error' |
   dev: 'success',
   qa: 'warning',
   staging: 'secondary',
-  prod: 'error',
+  prod: 'error'
 }
 
-function EnvChip({ env }: { env: string }): React.JSX.Element {
+const EnvChip = ({ env }: { env: string }) => {
   return (
     <Chip
       label={env}

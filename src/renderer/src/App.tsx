@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import EnvironmentVariables from './environmentVariables/EnvironmentVariables'
 
-function App(): React.JSX.Element {
+const App = () => {
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <EnvironmentVariables />

@@ -2,7 +2,7 @@ import { Chip } from '@mui/material'
 import LockIcon from '@mui/icons-material/Lock'
 import TuneIcon from '@mui/icons-material/Tune'
 
-function TypeBadge({ type }: { type: 'variable' | 'secret' }): React.JSX.Element {
+const TypeBadge = ({ type }: { type: 'variable' | 'secret' }) => {
   return type === 'secret' ? (
     <Chip
       icon={<LockIcon sx={{ fontSize: '0.85rem !important' }} />}

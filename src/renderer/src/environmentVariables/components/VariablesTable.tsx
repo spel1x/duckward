@@ -21,7 +21,7 @@ const HEADER_CELL_SX = {
   color: 'text.secondary'
 }
 
-function VariablesTable({
+const VariablesTable = ({
   variables,
   selectedId,
   onSelect
@@ -29,7 +29,7 @@ function VariablesTable({
   variables: Variable[]
   selectedId: string | null
   onSelect: (variable: Variable | null) => void
-}): React.JSX.Element {
+}) => {
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table>
