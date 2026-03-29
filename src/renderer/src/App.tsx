@@ -1,5 +1,21 @@
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import {
+  Box,
+  Chip,
+  Divider,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import LockIcon from '@mui/icons-material/Lock'
+import TuneIcon from '@mui/icons-material/Tune'
 
 type VariableType = 'variable' | 'secret'
 
@@ -74,77 +90,186 @@ const STATIC_VARIABLES: Variable[] = [
   },
 ]
 
-const ENV_COLORS: Record<string, string> = {
-  dev:     'bg-emerald-900/60 text-emerald-300 ring-1 ring-emerald-700/50',
-  qa:      'bg-amber-900/60 text-amber-300 ring-1 ring-amber-700/50',
-  staging: 'bg-violet-900/60 text-violet-300 ring-1 ring-violet-700/50',
-  prod:    'bg-rose-900/60 text-rose-300 ring-1 ring-rose-700/50',
+const ENV_COLORS: Record<string, 'success' | 'warning' | 'secondary' | 'error' | 'default'> = {
+  dev: 'success',
+  qa: 'warning',
+  staging: 'secondary',
+  prod: 'error',
 }
 
-const DEFAULT_ENV_COLOR = 'bg-zinc-700/60 text-zinc-300 ring-1 ring-zinc-600/50'
-
-function EnvTag({ env }: { env: string }): React.JSX.Element {
+function EnvChip({ env }: { env: string }): React.JSX.Element {
   return (
-    <span className={cn('inline-flex items-center rounded px-2 py-0.5 text-xs font-medium', ENV_COLORS[env] ?? DEFAULT_ENV_COLOR)}>
-      {env}
-    </span>
+    <Chip
+      label={env}
+      color={ENV_COLORS[env] ?? 'default'}
+      size="small"
+      sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+    />
   )
 }
 
 function TypeBadge({ type }: { type: VariableType }): React.JSX.Element {
+  return type === 'secret' ? (
+    <Chip
+      icon={<LockIcon sx={{ fontSize: '0.85rem !important' }} />}
+      label="secret"
+      size="small"
+      color="error"
+      sx={{ fontSize: '0.7rem', fontWeight: 600 }}
+    />
+  ) : (
+    <Chip
+      icon={<TuneIcon sx={{ fontSize: '0.85rem !important' }} />}
+      label="config"
+      size="small"
+      color="primary"
+      sx={{ fontSize: '0.7rem', fontWeight: 600 }}
+    />
+  )
+}
+
+const HEADER_CELL_SX = {
+  fontWeight: 700,
+  textTransform: 'uppercase',
+  fontSize: '0.7rem',
+  letterSpacing: '0.08em',
+  color: 'text.secondary',
+}
+
+function VariableDrawer({ variable, onClose }: { variable: Variable | null; onClose: () => void }): React.JSX.Element {
+  const open = variable !== null
+
   return (
-    <span className={cn(
-      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-      type === 'secret' ? 'bg-rose-900/50 text-rose-300' : 'bg-blue-900/50 text-blue-300'
-    )}>
-      {type === 'secret' ? '🔒 secret' : '# variable'}
-    </span>
+    <Box
+      sx={{
+        width: open ? 360 : 0,
+        flexShrink: 0,
+        overflow: 'hidden',
+        transition: 'width 0.25s ease',
+        borderLeft: open ? 1 : 0,
+        borderColor: 'divider',
+      }}
+    >
+      <Box sx={{ width: 360, p: 3, display: 'flex', flexDirection: 'column', gap: 2, height: '100%', overflow: 'auto' }}>
+        {variable && (
+          <>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+                  Variable
+                </Typography>
+                <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'monospace', wordBreak: 'break-all', lineHeight: 1.3, mt: 0.5 }}>
+                  {variable.name}
+                </Typography>
+              </Box>
+              <IconButton size="small" onClick={onClose} sx={{ mt: -0.5, ml: 1 }}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TypeBadge type={variable.type} />
+              {variable.description && (
+                <Typography variant="body2" color="text.secondary">
+                  {variable.description}
+                </Typography>
+              )}
+            </Box>
+
+            <Divider />
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+                Values
+              </Typography>
+              {variable.values.map((ev) => (
+                <Box key={ev.env} sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                  <EnvChip env={ev.env} />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily: 'monospace',
+                      bgcolor: 'background.default',
+                      px: 1.5,
+                      py: 1,
+                      borderRadius: 1,
+                      wordBreak: 'break-all',
+                      color: 'text.primary',
+                    }}
+                  >
+                    {ev.value}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </>
+        )}
+      </Box>
+    </Box>
   )
 }
 
 function App(): React.JSX.Element {
-  return (
-    <div className="min-h-screen bg-zinc-900 text-zinc-100 p-8">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="mb-1 text-2xl font-bold text-zinc-100">Environment Variables</h1>
-        <p className="mb-6 text-sm text-zinc-400">Manage variables across environments.</p>
+  const [selected, setSelected] = useState<Variable | null>(null)
 
-        <div className="rounded-lg border border-zinc-700/50 bg-zinc-800/50">
+  return (
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, overflow: 'auto', py: 5, px: 4 }}>
+        <Typography variant="h5" fontWeight={700} gutterBottom>
+          Environment Variables
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Manage variables across environments.
+        </Typography>
+
+        <TableContainer component={Paper} variant="outlined">
           <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Environments</TableHead>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={HEADER_CELL_SX}>Name</TableCell>
+                <TableCell sx={HEADER_CELL_SX}>Description</TableCell>
+                <TableCell sx={HEADER_CELL_SX}>Type</TableCell>
+                <TableCell sx={HEADER_CELL_SX}>Environments</TableCell>
               </TableRow>
-            </TableHeader>
+            </TableHead>
             <TableBody>
               {STATIC_VARIABLES.map((v) => (
-                <TableRow key={v.id}>
-                  <TableCell className="font-mono text-xs font-medium text-zinc-100">{v.name}</TableCell>
-                  <TableCell className="text-zinc-400 text-sm">{v.description}</TableCell>
-                  <TableCell><TypeBadge type={v.type} /></TableCell>
+                <TableRow
+                  key={v.id}
+                  hover
+                  selected={selected?.id === v.id}
+                  onClick={() => setSelected(selected?.id === v.id ? null : v)}
+                  sx={{ cursor: 'pointer' }}
+                >
                   <TableCell>
-                    <div className="flex flex-wrap gap-1.5">
-                      {v.type === 'secret'
-                        ? v.values.map((ev) => <EnvTag key={ev.env} env={ev.env} />)
-                        : v.values.map((ev) => (
-                            <span key={ev.env} className="flex items-center gap-1">
-                              <EnvTag env={ev.env} />
-                              <span className="font-mono text-xs text-zinc-400">{ev.value}</span>
-                            </span>
-                          ))
-                      }
-                    </div>
+                    <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 600, color: 'text.primary' }}>
+                      {v.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {v.description}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <TypeBadge type={v.type} />
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                      {v.values.map((ev) => (
+                        <EnvChip key={ev.env} env={ev.env} />
+                      ))}
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </div>
-      </div>
-    </div>
+        </TableContainer>
+      </Box>
+
+      <VariableDrawer variable={selected} onClose={() => setSelected(null)} />
+    </Box>
   )
 }
 
