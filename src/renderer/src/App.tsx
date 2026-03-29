@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   Chip,
@@ -16,79 +16,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import LockIcon from '@mui/icons-material/Lock'
 import TuneIcon from '@mui/icons-material/Tune'
-
-type VariableType = 'variable' | 'secret'
-
-interface EnvValue {
-  env: string
-  value: string
-}
-
-interface Variable {
-  id: string
-  name: string
-  description: string
-  type: VariableType
-  values: EnvValue[]
-}
-
-const STATIC_VARIABLES: Variable[] = [
-  {
-    id: '1',
-    name: 'ConnectionStrings__Db',
-    description: 'Main database connection string',
-    type: 'secret',
-    values: [
-      { env: 'dev', value: 'Server=localhost;Database=dev' },
-      { env: 'qa', value: 'Server=qa-db;Database=qa' },
-      { env: 'prod', value: 'Server=prod-db;Database=prod' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'FUNCTIONS_WORKER_RUNTIME',
-    description: 'Azure Functions runtime language',
-    type: 'variable',
-    values: [
-      { env: 'dev', value: 'dotnet' },
-      { env: 'qa', value: 'dotnet' },
-      { env: 'prod', value: 'dotnet' },
-    ],
-  },
-  {
-    id: '3',
-    name: 'AzureWebJobsStorage',
-    description: 'Storage account connection',
-    type: 'secret',
-    values: [
-      { env: 'dev', value: 'UseDevelopmentStorage=true' },
-      { env: 'qa', value: 'DefaultEndpoints=https;AccountName=qa' },
-    ],
-  },
-  {
-    id: '4',
-    name: 'APPINSIGHTS_KEY',
-    description: 'Application Insights instrumentation key',
-    type: 'secret',
-    values: [
-      { env: 'dev', value: 'dev-key-abc123' },
-      { env: 'qa', value: 'qa-key-def456' },
-      { env: 'prod', value: 'prod-key-ghi789' },
-    ],
-  },
-  {
-    id: '5',
-    name: 'ServiceBus__Namespace',
-    description: 'Service bus namespace URL',
-    type: 'variable',
-    values: [
-      { env: 'dev', value: 'sb://dev-bus.servicebus.windows.net' },
-      { env: 'staging', value: 'sb://staging-bus.servicebus.windows.net' },
-      { env: 'qa', value: 'sb://qa-bus.servicebus.windows.net' },
-      { env: 'prod', value: 'sb://prod-bus.servicebus.windows.net' },
-    ],
-  },
-]
+import { Variable } from '../../shared/types/Variable'
 
 const ENV_COLORS: Record<string, 'success' | 'warning' | 'secondary' | 'error' | 'default'> = {
   dev: 'success',
@@ -108,7 +36,7 @@ function EnvChip({ env }: { env: string }): React.JSX.Element {
   )
 }
 
-function TypeBadge({ type }: { type: VariableType }): React.JSX.Element {
+function TypeBadge({ type }: { type: 'variable' | 'secret' }): React.JSX.Element {
   return type === 'secret' ? (
     <Chip
       icon={<LockIcon sx={{ fontSize: '0.85rem !important' }} />}
@@ -210,7 +138,12 @@ function VariableDrawer({ variable, onClose }: { variable: Variable | null; onCl
 }
 
 function App(): React.JSX.Element {
+  const [variables, setVariables] = useState<Variable[]>([])
   const [selected, setSelected] = useState<Variable | null>(null)
+
+  useEffect(() => {
+    window.api.getVariables().then(setVariables)
+  }, [])
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -233,7 +166,7 @@ function App(): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
-              {STATIC_VARIABLES.map((v) => (
+              {variables.map((v) => (
                 <TableRow
                   key={v.id}
                   hover
