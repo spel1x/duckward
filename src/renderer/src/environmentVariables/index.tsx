@@ -14,9 +14,26 @@ const EnvironmentVariables = () => {
 
   return (
     <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-      <Box sx={{ flex: 1, overflow: 'auto', py: 5, px: 4 }}>
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          pt: 5,
+          px: 4,
+          pb: 0,
+          bgcolor: 'background.paper'
+        }}
+      >
         <Box
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            mb: 0.5,
+            flexShrink: 0
+          }}
         >
           <Typography variant="h5" fontWeight={700}>
             Environment Variables
@@ -30,14 +47,16 @@ const EnvironmentVariables = () => {
             Add Variable
           </Button>
         </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, flexShrink: 0 }}>
           Manage variables across environments.
         </Typography>
-        <VariablesTable
-          variables={variables}
-          selectedId={selected?.id ?? null}
-          onSelect={setSelected}
-        />
+        <Box sx={{ flex: 1, overflow: 'auto' }}>
+          <VariablesTable
+            variables={variables}
+            selectedId={selected?.id ?? null}
+            onSelect={setSelected}
+          />
+        </Box>
       </Box>
 
       <VariableDrawer variable={selected} onClose={() => setSelected(null)} />

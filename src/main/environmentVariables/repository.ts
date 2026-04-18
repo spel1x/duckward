@@ -12,5 +12,7 @@ export function getAll(): Variable[] {
 }
 
 export function createVariable(variable: Variable): void {
-  console.log('Creating variable:', variable)
+  const variables: Variable[] = getAll()
+  variables.push(variable)
+  fs.writeFileSync(filePath, JSON.stringify(variables))
 }

@@ -1,15 +1,18 @@
 import { Box, Divider, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { Variable } from '../../../../shared/types/Variable'
 import EnvChip from '../../shared/components/EnvChip'
 import TypeBadge from '../../shared/components/TypeBadge'
 
 const VariableDrawer = ({
   variable,
-  onClose
+  onClose,
+  onDelete
 }: {
   variable: Variable | null
   onClose: () => void
+  onDelete: (variable: Variable) => void
 }) => {
   const open = variable !== null
 
@@ -32,7 +35,8 @@ const VariableDrawer = ({
           flexDirection: 'column',
           gap: 2,
           height: '100%',
-          overflow: 'auto'
+          overflow: 'auto',
+          bgcolor: 'background.default'
         }}
       >
         {variable && (
@@ -56,9 +60,14 @@ const VariableDrawer = ({
                   {variable.name}
                 </Typography>
               </Box>
-              <IconButton size="small" onClick={onClose} sx={{ mt: -0.5, ml: 1 }}>
-                <CloseIcon fontSize="small" />
-              </IconButton>
+              <Box sx={{ display: 'flex', gap: 0.5, mt: -0.5, ml: 1 }}>
+                <IconButton size="small" onClick={() => onDelete(variable)} color="error">
+                  <DeleteOutlineIcon fontSize="small" />
+                </IconButton>
+                <IconButton size="small" onClick={onClose}>
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
