@@ -10,3 +10,5 @@ export interface Variable {
   type: 'variable' | 'secret'
   values: EnvValue[]
 }
+
+export type CreateVariable = Omit<Variable, 'id'>

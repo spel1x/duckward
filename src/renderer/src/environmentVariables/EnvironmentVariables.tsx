@@ -8,7 +8,7 @@ import VariableDrawer from './components/VariableDrawer'
 import AddVariableDialog from './components/AddVariableDialog'
 
 const EnvironmentVariables = () => {
-  const variables = useEnvironmentVariables()
+  const { variables, createVariable } = useEnvironmentVariables()
   const [selected, setSelected] = useState<Variable | null>(null)
   const [addOpen, setAddOpen] = useState(false)
 
@@ -41,7 +41,7 @@ const EnvironmentVariables = () => {
       </Box>
 
       <VariableDrawer variable={selected} onClose={() => setSelected(null)} />
-      <AddVariableDialog open={addOpen} onClose={() => setAddOpen(false)} />
+      <AddVariableDialog onSave={createVariable} open={addOpen} onClose={() => setAddOpen(false)} />
     </Box>
   )
 }

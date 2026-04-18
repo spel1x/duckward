@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { CreateVariable } from '../../../../shared/types/Variable'
 
 interface EnvValueDraft {
   env: string
@@ -38,16 +39,23 @@ const EMPTY_DRAFT: VariableDraft = {
 
 const AddVariableDialog = ({
   open,
-  onClose
+  onClose,
+  onSave
 }: {
   open: boolean
   onClose: () => void
+  onSave: (draft: CreateVariable) => void
 }) => {
-  const [draft, setDraft] = useState<VariableDraft>(EMPTY_DRAFT)
+  const [draft, setDraft] = useState<CreateVariable>(EMPTY_DRAFT)
 
   function handleClose(): void {
     setDraft(EMPTY_DRAFT)
     onClose()
+  }
+
+  function handleSave(): void {
+    onSave(draft)
+    handleClose()
   }
 
   function setField<K extends keyof VariableDraft>(key: K, value: VariableDraft[K]): void {
@@ -168,7 +176,7 @@ const AddVariableDialog = ({
         <Button onClick={handleClose} color="inherit">
           Cancel
         </Button>
-        <Button variant="contained" disableElevation>
+        <Button onClick={handleSave} variant="contained" disableElevation>
           Save
         </Button>
       </DialogActions>

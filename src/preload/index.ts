@@ -1,9 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { CreateVariable } from '../shared/types/Variable'
 
 // Custom APIs for renderer
 const api = {
-  getVariables: () => ipcRenderer.invoke('variables:getAll')
+  getVariables: () => ipcRenderer.invoke('variables:getAll'),
+  createVariable: (variable: CreateVariable) => ipcRenderer.invoke('variables:create', variable)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
