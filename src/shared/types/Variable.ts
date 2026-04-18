@@ -1,5 +1,7 @@
+export type Environment = 'dev' | 'qa' | 'uat' | 'prod'
+
 export interface EnvValue {
-  env: string
+  env: Environment
   value: string
 }
 

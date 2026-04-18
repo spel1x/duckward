@@ -7,34 +7,28 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
+  InputLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
   Typography
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import { CreateVariable } from '../../../../shared/types/Variable'
+import { CreateVariable, Environment, EnvValue } from '../../../../shared/types/Variable'
 
-interface EnvValueDraft {
-  env: string
-  value: string
-}
+const ENV_OPTIONS: Environment[] = ['dev', 'qa', 'uat', 'prod']
 
-interface VariableDraft {
-  name: string
-  description: string
-  type: 'variable' | 'secret'
-  values: EnvValueDraft[]
-}
-
-const EMPTY_DRAFT: VariableDraft = {
+const EMPTY_DRAFT: CreateVariable = {
   name: '',
   description: '',
   type: 'variable',
-  values: [{ env: '', value: '' }]
+  values: [{ env: 'dev', value: '' }]
 }
 
 const AddVariableDialog = ({
@@ -58,11 +52,11 @@ const AddVariableDialog = ({
     handleClose()
   }
 
-  function setField<K extends keyof VariableDraft>(key: K, value: VariableDraft[K]): void {
+  function setField<K extends keyof CreateVariable>(key: K, value: CreateVariable[K]): void {
     setDraft((prev) => ({ ...prev, [key]: value }))
   }
 
-  function setEnvValue(index: number, field: keyof EnvValueDraft, value: string): void {
+  function setEnvValue(index: number, field: keyof EnvValue, value: string): void {
     setDraft((prev) => {
       const values = [...prev.values]
       values[index] = { ...values[index], [field]: value }
@@ -71,7 +65,7 @@ const AddVariableDialog = ({
   }
 
   function addEnvValue(): void {
-    setDraft((prev) => ({ ...prev, values: [...prev.values, { env: '', value: '' }] }))
+    setDraft((prev) => ({ ...prev, values: [...prev.values, { env: 'dev', value: '' }] }))
   }
 
   function removeEnvValue(index: number): void {
@@ -134,14 +128,20 @@ const AddVariableDialog = ({
 
           {draft.values.map((ev, i) => (
             <Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <TextField
-                label="Environment"
-                value={ev.env}
-                onChange={(e) => setEnvValue(i, 'env', e.target.value)}
-                size="small"
-                sx={{ width: 140 }}
-                placeholder="dev"
-              />
+              <FormControl size="small" sx={{ width: 140 }}>
+                <InputLabel>Environment</InputLabel>
+                <Select
+                  label="Environment"
+                  value={ev.env}
+                  onChange={(e) => setEnvValue(i, 'env', e.target.value)}
+                >
+                  {ENV_OPTIONS.map((env) => (
+                    <MenuItem key={env} value={env}>
+                      {env}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 label="Value"
                 value={ev.value}
