@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import EnvironmentVariables from './environmentVariables/EnvironmentVariables'
+import EnvironmentVariables from './environmentVariables'
 
 const App = () => {
   return (
