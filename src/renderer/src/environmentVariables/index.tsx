@@ -1,20 +1,14 @@
 import { useState } from 'react'
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Typography
-} from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
+import { Box } from '@mui/material'
 import { Variable } from '../../../shared/types/Variable'
 import useEnvironmentVariables from './hooks/useEnvironmentVariables'
-import VariablesTable from './components/VariablesTable'
-import VariableDrawer from './components/VariableDrawer'
-import AddVariableDialog from './components/AddVariableDialog'
+import {
+  AddVariableDialog,
+  DeleteVariableDialog,
+  VariableDrawer,
+  VariablesHeader,
+  VariablesTable
+} from './components'
 
 const EnvironmentVariables = () => {
   const { variables, createVariable, deleteVariable } = useEnvironmentVariables()
@@ -43,30 +37,7 @@ const EnvironmentVariables = () => {
           bgcolor: 'background.paper'
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 0.5,
-            flexShrink: 0
-          }}
-        >
-          <Typography variant="h5" fontWeight={700}>
-            Environment Variables
-          </Typography>
-          <Button
-            variant="contained"
-            disableElevation
-            startIcon={<AddIcon />}
-            onClick={() => setAddOpen(true)}
-          >
-            Add Variable
-          </Button>
-        </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, flexShrink: 0 }}>
-          Manage variables across environments.
-        </Typography>
+        <VariablesHeader onAdd={() => setAddOpen(true)} />
         <Box sx={{ flex: 1, overflow: 'auto' }}>
           <VariablesTable
             variables={variables}
@@ -82,20 +53,12 @@ const EnvironmentVariables = () => {
         onDelete={(variable) => setPendingDelete(variable)}
       />
       <AddVariableDialog onSave={createVariable} open={addOpen} onClose={() => setAddOpen(false)} />
-      <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)}>
-        <DialogTitle>Delete variable?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            &quot;{pendingDelete?.name}&quot; will be permanently deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPendingDelete(null)}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteVariableDialog
+        open={!!pendingDelete}
+        variableName={pendingDelete?.name ?? null}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setPendingDelete(null)}
+      />
     </Box>
   )
 }
