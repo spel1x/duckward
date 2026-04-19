@@ -1,9 +1,8 @@
 import { CreateVariable, Variable } from '../../shared/types/Variable'
-import { getAll as getAllFromRepo } from './repository'
-import { createVariable as createVariableInRepo } from './repository'
+import * as repo from './repository'
 
-export function getAll(): Variable[] {
-  return getAllFromRepo()
+export function getVariables(): Variable[] {
+  return repo.getVariables()
 }
 
 export function createVariable(variable: CreateVariable): void {
@@ -11,5 +10,9 @@ export function createVariable(variable: CreateVariable): void {
     ...variable,
     id: crypto.randomUUID()
   }
-  createVariableInRepo(createdVariable)
+  repo.createVariable(createdVariable)
+}
+
+export function deleteVariable(id: string): void {
+  repo.deleteVariable(id)
 }

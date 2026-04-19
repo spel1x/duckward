@@ -7,6 +7,7 @@ declare global {
     api: {
       getVariables: () => Promise<Variable[]>
       createVariable: (variable: CreateVariable) => Promise<void>
+      deleteVariable: (id: string) => Promise<void>
     }
   }
 }
