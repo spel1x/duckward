@@ -1,5 +1,14 @@
 import { useState } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography
+} from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { Variable } from '../../../shared/types/Variable'
 import useEnvironmentVariables from './hooks/useEnvironmentVariables'
@@ -8,9 +17,17 @@ import VariableDrawer from './components/VariableDrawer'
 import AddVariableDialog from './components/AddVariableDialog'
 
 const EnvironmentVariables = () => {
-  const { variables, createVariable } = useEnvironmentVariables()
+  const { variables, createVariable, deleteVariable } = useEnvironmentVariables()
   const [selected, setSelected] = useState<Variable | null>(null)
   const [addOpen, setAddOpen] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<Variable | null>(null)
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return
+    await deleteVariable(pendingDelete.id)
+    setPendingDelete(null)
+    setSelected(null)
+  }
 
   return (
     <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -59,8 +76,26 @@ const EnvironmentVariables = () => {
         </Box>
       </Box>
 
-      <VariableDrawer variable={selected} onClose={() => setSelected(null)} />
+      <VariableDrawer
+        variable={selected}
+        onClose={() => setSelected(null)}
+        onDelete={(variable) => setPendingDelete(variable)}
+      />
       <AddVariableDialog onSave={createVariable} open={addOpen} onClose={() => setAddOpen(false)} />
+      <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)}>
+        <DialogTitle>Delete variable?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            &quot;{pendingDelete?.name}&quot; will be permanently deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPendingDelete(null)}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

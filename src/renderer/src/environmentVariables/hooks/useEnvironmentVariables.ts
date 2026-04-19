@@ -4,6 +4,7 @@ import { Variable, CreateVariable } from '../../../../shared/types/Variable'
 interface UseEnvironmentVariablesResult {
   variables: Variable[]
   createVariable: (draft: CreateVariable) => Promise<void>
+  deleteVariable: (id: string) => Promise<void>
 }
 
 function useEnvironmentVariables(): UseEnvironmentVariablesResult {
@@ -18,7 +19,12 @@ function useEnvironmentVariables(): UseEnvironmentVariablesResult {
     setVariables((prev) => [...prev, { ...draft, id: crypto.randomUUID() }])
   }
 
-  return { variables, createVariable }
+  async function deleteVariable(id: string): Promise<void> {
+    await window.api.deleteVariable(id)
+    setVariables((prev) => prev.filter((variable) => variable.id !== id))
+  }
+
+  return { variables, createVariable, deleteVariable }
 }
 
 export default useEnvironmentVariables
