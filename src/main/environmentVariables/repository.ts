@@ -22,3 +22,13 @@ export function deleteVariable(id: string): void {
   const updatedVariables = variables.filter((variable) => variable.id !== id)
   fs.writeFileSync(filePath, JSON.stringify(updatedVariables))
 }
+
+export function updateVariable(updated: Variable): void {
+  const variables: Variable[] = getVariables()
+  const index = variables.findIndex((variable) => variable.id === updated.id)
+  if (index === -1) {
+    return
+  }
+  variables[index] = updated
+  fs.writeFileSync(filePath, JSON.stringify(variables))
+}

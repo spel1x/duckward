@@ -5,6 +5,7 @@ interface UseEnvironmentVariablesResult {
   variables: Variable[]
   createVariable: (draft: CreateVariable) => Promise<void>
   deleteVariable: (id: string) => Promise<void>
+  updateVariable: (variable: Variable) => Promise<void>
 }
 
 function useEnvironmentVariables(): UseEnvironmentVariablesResult {
@@ -24,7 +25,14 @@ function useEnvironmentVariables(): UseEnvironmentVariablesResult {
     setVariables((prev) => prev.filter((variable) => variable.id !== id))
   }
 
-  return { variables, createVariable, deleteVariable }
+  async function updateVariable(updated: Variable): Promise<void> {
+    await window.api.updateVariable(updated)
+    setVariables((prev) =>
+      prev.map((variable) => (variable.id === updated.id ? updated : variable))
+    )
+  }
+
+  return { variables, createVariable, deleteVariable, updateVariable }
 }
 
 export default useEnvironmentVariables

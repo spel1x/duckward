@@ -1,12 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { CreateVariable } from '../shared/types/Variable'
+import { CreateVariable, Variable } from '../shared/types/Variable'
 
 // Custom APIs for renderer
 const api = {
   getVariables: () => ipcRenderer.invoke('variables:getAll'),
   createVariable: (variable: CreateVariable) => ipcRenderer.invoke('variables:create', variable),
-  deleteVariable: (id: string) => ipcRenderer.invoke('variables:delete', id)
+  deleteVariable: (id: string) => ipcRenderer.invoke('variables:delete', id),
+  updateVariable: (variable: Variable) => ipcRenderer.invoke('variables:update', variable)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -16,3 +16,7 @@ export function createVariable(variable: CreateVariable): void {
 export function deleteVariable(id: string): void {
   repo.deleteVariable(id)
 }
+
+export function updateVariable(variable: Variable): void {
+  repo.updateVariable(variable)
+}

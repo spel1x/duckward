@@ -11,7 +11,7 @@ import {
 } from './components'
 
 const EnvironmentVariables = () => {
-  const { variables, createVariable, deleteVariable } = useEnvironmentVariables()
+  const { variables, createVariable, deleteVariable, updateVariable } = useEnvironmentVariables()
   const [selected, setSelected] = useState<Variable | null>(null)
   const [addOpen, setAddOpen] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<Variable | null>(null)
@@ -21,6 +21,11 @@ const EnvironmentVariables = () => {
     await deleteVariable(pendingDelete.id)
     setPendingDelete(null)
     setSelected(null)
+  }
+
+  const handleUpdateVariable = async (updated: Variable) => {
+    await updateVariable(updated)
+    setSelected(updated)
   }
 
   return (
@@ -48,9 +53,11 @@ const EnvironmentVariables = () => {
       </Box>
 
       <VariableDrawer
+        key={selected?.id ?? 'none'}
         variable={selected}
         onClose={() => setSelected(null)}
-        onDelete={(variable) => setPendingDelete(variable)}
+        onDelete={setPendingDelete}
+        onSave={handleUpdateVariable}
       />
       <AddVariableDialog onSave={createVariable} open={addOpen} onClose={() => setAddOpen(false)} />
       <DeleteVariableDialog
