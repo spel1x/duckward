@@ -31,8 +31,8 @@ const VariablesTable = ({
   onSelect: (variable: Variable | null) => void
 }) => {
   return (
-    <TableContainer component={Paper} variant="outlined">
-      <Table>
+    <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: '100%' }}>
+      <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell sx={HEADER_CELL_SX}>Name</TableCell>
